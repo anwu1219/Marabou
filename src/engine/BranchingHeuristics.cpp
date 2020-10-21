@@ -36,7 +36,10 @@ void BranchingHeuristics::updateScore( PiecewiseLinearConstraint *constraint,
                                        double score )
 {
     ASSERT( _constraintToScore.exists( constraint ) );
+    _scoreConstraintPairs.erase( std::make_pair( _constraintToScore[constraint], constraint ) );
     _constraintToScore[constraint] = score;
+    _scoreConstraintPairs.insert( std::make_pair( score, constraint ) );
+
 }
 
 PiecewiseLinearConstraint *BranchingHeuristics::pickMaxScore()
