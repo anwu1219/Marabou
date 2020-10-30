@@ -49,6 +49,7 @@ Engine::Engine()
     , _lastNumVisitedStates( 0 )
     , _lastIterationWithProgress( 0 )
     , _splittingStrategy( Options::get()->getDivideStrategy() )
+    , _influenceForSplitting( this )
 {
     _smtCore.setStatistics( &_statistics );
     _tableau->setStatistics( &_statistics );
@@ -2091,18 +2092,7 @@ PiecewiseLinearConstraint *Engine::pickSplitPLConstraintBasedOnInfluence()
     // We push the first unfixed ReLU in the topology order to the _candidatePlConstraints
     ENGINE_LOG( Stringf( "Using EarliestReLU heuristics..." ).ascii() );
 
-    if ( !_networkLevelReasoner )
-        throw MarabouError( MarabouError::NETWORK_LEVEL_REASONER_NOT_AVAILABLE );
-
-    List<PiecewiseLinearConstraint *> constraints =
-        _networkLevelReasoner->getConstraintsInTopologicalOrder();
-
-    for ( auto &plConstraint : constraints )
-        {
-            if ( plConstraint->isActive() && !plConstraint->phaseFixed() )
-                return plConstraint;
-        }
-    return NULL;
+    return _influenceForSplitting.pickSplittingConstraint();
 }
 
 PiecewiseLinearConstraint *Engine::pickSplitPLConstraint()
@@ -2114,7 +2104,7 @@ PiecewiseLinearConstraint *Engine::pickSplitPLConstraint()
         candidatePLConstraint = pickSplitPLConstraintBasedOnPolarity();
     else if ( _splittingStrategy == DivideStrategy::EarliestReLU )
         candidatePLConstraint = pickSplitPLConstraintBasedOnTopology();
-    if ( _splittingStrategy == DivideStrategy::MaxInfluence )
+    else if ( _splittingStrategy == DivideStrategy::MaxInfluence )
         candidatePLConstraint = pickSplitPLConstraintBasedOnInfluence();
     else if ( _splittingStrategy == DivideStrategy::LargestInterval &&
               _smtCore.getStackDepth() %

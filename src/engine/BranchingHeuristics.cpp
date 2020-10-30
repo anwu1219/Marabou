@@ -18,6 +18,7 @@
 BranchingHeuristics::BranchingHeuristics( IEngine *engine )
     : _engine( engine )
 {
+    initialize();
 }
 
 void BranchingHeuristics::initialize()
@@ -39,8 +40,15 @@ void BranchingHeuristics::updateScore( PiecewiseLinearConstraint *constraint,
     _constraintToScore[constraint] = score;
 }
 
-PiecewiseLinearConstraint *BranchingHeuristics::pickMaxScore()
+PiecewiseLinearConstraint *BranchingHeuristics::pickSplittingConstraint()
 {
     ASSERT( !_constraintToScore.empty() );
-    return _scoreConstraintPairs.begin()->second;
+    Set<std::pair<double, PiecewiseLinearConstraint *>>::iterator it;
+    for (it = _scoreConstraintPairs.begin(); it != _scoreConstraintPairs.end(); ++it)
+    {
+	PiecewiseLinearConstraint *plc = it->second;
+        if (plc->isActive() && !plc->phaseFixed())
+            return plc;
+    }
+    return NULL;
 }

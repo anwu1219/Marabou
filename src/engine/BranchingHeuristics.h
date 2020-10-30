@@ -31,7 +31,7 @@ public:
 
     void updateScore( PiecewiseLinearConstraint *constraint, double score );
 
-    PiecewiseLinearConstraint *pickMaxScore();
+    PiecewiseLinearConstraint *pickSplittingConstraint();
 
 private:
 

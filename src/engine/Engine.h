@@ -22,6 +22,7 @@
 #include "AutoRowBoundTightener.h"
 #include "AutoTableau.h"
 #include "BlandsRule.h"
+#include "BranchingHeuristics.h"
 #include "DantzigsRule.h"
 #include "DegradationChecker.h"
 #include "DivideStrategy.h"
@@ -332,6 +333,11 @@ private:
       Strategy used for internal splitting
     */
     DivideStrategy _splittingStrategy;
+
+    /*
+      The handler for a splitting strategy based on influence.
+    */
+    BranchingHeuristics _influenceForSplitting;
 
     /*
       Disjunction that is used for splitting but doesn't exist in the beginning
