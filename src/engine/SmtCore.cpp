@@ -129,6 +129,17 @@ void SmtCore::performSplit()
     stateBeforeSplits->_stateId = _stateId;
     ++_stateId;
     _engine->storeState( *stateBeforeSplits, true );
+    if (!_stack.empty())
+    {
+	    stateBeforeSplits->_numDiffPlConstraintsDisabledByValidSplits =
+		    stateBeforeSplits->_numPlConstraintsDisabledByValidSplits -
+		    _stack.back()->_engineState->_numPlConstraintsDisabledByValidSplits;
+    } else
+    {
+	    stateBeforeSplits->_numDiffPlConstraintsDisabledByValidSplits =
+		    stateBeforeSplits->_numPlConstraintsDisabledByValidSplits -
+		    _impliedValidSplitsAtRoot.size();
+    }
 
     SmtStackEntry *stackEntry = new SmtStackEntry;
     // Perform the first split: add bounds and equations
@@ -180,7 +191,8 @@ bool SmtCore::popSplit()
 
     // Remove any entries that have no alternatives
     String error;
-    while ( _stack.back()->_alternativeSplits.empty() )
+    SmtStackEntry *lastEntry = _stack.back();
+    while ( lastEntry->_alternativeSplits.empty() )
     {
         if ( checkSkewFromDebuggingSolution() )
         {
@@ -189,12 +201,20 @@ bool SmtCore::popSplit()
             throw MarabouError( MarabouError::DEBUGGING_ERROR );
         }
 
+	const PiecewiseLinearConstraint *lastPLC = lastEntry->_activeSplit.getSourcePLC();
+	double numFixed = (double)(lastEntry->_engineState->_numDiffPlConstraintsDisabledByValidSplits);
+
         delete _stack.back()->_engineState;
         delete _stack.back();
         _stack.popBack();
 
         if ( _stack.empty() )
             return false;
+
+	_engine->_influenceForSplitting->updateTime(lastPLC);
+	_engine->_influenceForSplitting->updateSpatial(lastPLC, _stack.back()->_activeSplit.getSourcePLC(), numFixed);
+
+	lastEntry = _stack.back();
     }
 
     if ( checkSkewFromDebuggingSolution() )

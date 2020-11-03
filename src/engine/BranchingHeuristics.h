@@ -29,16 +29,28 @@ public:
 
     void initialize();
 
-    void updateScore( PiecewiseLinearConstraint *constraint, double score );
+    void updateScore( const PiecewiseLinearConstraint *constraint, double score );
+
+    void updateSpatial( const PiecewiseLinearConstraint *child, const PiecewiseLinearConstraint *parent, double numFixed );
+
+    void updateTime( const PiecewiseLinearConstraint *constraint );
 
     PiecewiseLinearConstraint *pickSplittingConstraint();
 
 private:
 
+    const double _decayTime = 0.4;
+    const double _decaySpatial = 0.8;
+
     /*
       Mapping from a PLConstraint to its score
     */
     Map<PiecewiseLinearConstraint *, double> _constraintToScore;
+
+    /*
+      Mapping from a PLConstraint to its temporary score
+    */
+    Map<PiecewiseLinearConstraint *, double> _constraintToTempScore;
 
     /*
       TreeSet of <score, constraint> pair

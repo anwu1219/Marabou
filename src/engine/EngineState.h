@@ -38,6 +38,7 @@ public:
     */
     Map<PiecewiseLinearConstraint *, PiecewiseLinearConstraint *> _plConstraintToState;
     unsigned _numPlConstraintsDisabledByValidSplits;
+    unsigned _numDiffPlConstraintsDisabledByValidSplits;
 
     /*
       A unique ID allocated to every state that is stored, for
