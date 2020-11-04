@@ -16,18 +16,16 @@
 #ifndef __BranchingHeuristics_h__
 #define __BranchingHeuristics_h__
 
-#include "IEngine.h"
 #include "Map.h"
 #include "Set.h"
+#include "List.h"
 #include "PiecewiseLinearConstraint.h"
 
 class BranchingHeuristics
 {
 public:
 
-    BranchingHeuristics( IEngine *engine );
-
-    void initialize();
+    void initialize( List<PiecewiseLinearConstraint *> &constraints );
 
     void updateScore( const PiecewiseLinearConstraint *constraint, double score );
 
@@ -56,11 +54,6 @@ private:
       TreeSet of <score, constraint> pair
     */
     Set<std::pair<double, PiecewiseLinearConstraint *>> _scoreConstraintPairs;
-
-    /*
-      Engine
-    */
-    IEngine *_engine;
 
 };
 

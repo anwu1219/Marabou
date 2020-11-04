@@ -49,7 +49,6 @@ Engine::Engine()
     , _lastNumVisitedStates( 0 )
     , _lastIterationWithProgress( 0 )
     , _splittingStrategy( Options::get()->getDivideStrategy() )
-    , _influenceForSplitting( this )
 {
     _smtCore.setStatistics( &_statistics );
     _tableau->setStatistics( &_statistics );
@@ -1110,6 +1109,8 @@ bool Engine::processInputQuery( InputQuery &inputQuery, bool preprocess )
                 DivideStrategy::LargestInterval : DivideStrategy::ReLUViolation;
         }
 
+        _influenceForSplitting.initialize(_plConstraints);
+
         struct timespec end = TimeUtils::sampleMicro();
         _statistics.setPreprocessingTime( TimeUtils::timePassed( start, end ) );
     }
@@ -1406,6 +1407,11 @@ bool Engine::attemptToMergeVariables( unsigned x1, unsigned x2 )
     _activeEntryStrategy->initialize( _tableau );
 
     return true;
+}
+
+BranchingHeuristics *Engine::getInfluenceForSplitting()
+{
+    return &_influenceForSplitting;
 }
 
 void Engine::applySplit( const PiecewiseLinearCaseSplit &split )
