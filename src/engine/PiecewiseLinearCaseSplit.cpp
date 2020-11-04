@@ -79,7 +79,7 @@ void PiecewiseLinearCaseSplit::updateVariableIndex( unsigned oldIndex, unsigned 
         equation.updateVariableIndex( oldIndex, newIndex );
 }
 
-const PiecewiseLinearConstraint *PiecewiseLinearCaseSplit::getSourcePLC()
+const void *PiecewiseLinearCaseSplit::getSourcePLC()
 {
 	return _sourcePLC;
 }

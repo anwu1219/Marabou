@@ -211,8 +211,8 @@ bool SmtCore::popSplit()
         if ( _stack.empty() )
             return false;
 
-	_engine->_influenceForSplitting->updateTime(lastPLC);
-	_engine->_influenceForSplitting->updateSpatial(lastPLC, _stack.back()->_activeSplit.getSourcePLC(), numFixed);
+	_engine->getInfluenceForSplitting()->updateTime(lastPLC);
+	_engine->getInfluenceForSplitting()->updateSpatial(lastPLC, _stack.back()->_activeSplit.getSourcePLC(), numFixed);
 
 	lastEntry = _stack.back();
     }

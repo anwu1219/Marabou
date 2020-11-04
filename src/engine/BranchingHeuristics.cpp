@@ -15,16 +15,8 @@
 
 #include "BranchingHeuristics.h"
 
-BranchingHeuristics::BranchingHeuristics( IEngine *engine )
-    : _engine( engine )
+void BranchingHeuristics::initialize( const List<PiecewiseLinearConstraint *> &constraints )
 {
-    initialize();
-}
-
-void BranchingHeuristics::initialize()
-{
-    const List<PiecewiseLinearConstraint *> &constraints =
-        _engine->getPiecewiseLinearConstraints();
     for ( const auto &constraint : constraints )
     {
         _constraintToScore[constraint] = 1;
