@@ -27,6 +27,7 @@
 
 SmtCore::SmtCore( IEngine *engine )
     : _statistics( NULL )
+    , _influenceForSplitting( NULL )
     , _engine( engine )
     , _needToSplit( false )
     , _constraintForSplitting( NULL )
@@ -201,7 +202,7 @@ bool SmtCore::popSplit()
             throw MarabouError( MarabouError::DEBUGGING_ERROR );
         }
 
-	const PiecewiseLinearConstraint *lastPLC = lastEntry->_activeSplit.getSourcePLC();
+	PiecewiseLinearConstraint *lastPLC = (PiecewiseLinearConstraint *) lastEntry->_activeSplit.getSourcePLC();
 	double numFixed = (double)(lastEntry->_engineState->_numDiffPlConstraintsDisabledByValidSplits);
 
         delete _stack.back()->_engineState;
@@ -211,8 +212,8 @@ bool SmtCore::popSplit()
         if ( _stack.empty() )
             return false;
 
-	_engine->getInfluenceForSplitting()->updateTime(lastPLC);
-	_engine->getInfluenceForSplitting()->updateSpatial(lastPLC, _stack.back()->_activeSplit.getSourcePLC(), numFixed);
+        _influenceForSplitting->updateTime(lastPLC);
+	_influenceForSplitting->updateSpatial(lastPLC, (PiecewiseLinearConstraint *)_stack.back()->_activeSplit.getSourcePLC(), numFixed);
 
 	lastEntry = _stack.back();
     }
@@ -470,4 +471,9 @@ bool SmtCore::pickSplitPLConstraint()
     if ( _needToSplit )
         _constraintForSplitting = _engine->pickSplitPLConstraint();
     return _constraintForSplitting != NULL;
+}
+
+void SmtCore::setInfleunceForSplitting( BranchingHeuristics *influenceForSplitting )
+{
+    _influenceForSplitting = influenceForSplitting;
 }

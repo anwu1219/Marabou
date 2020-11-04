@@ -53,12 +53,12 @@ public:
     */
     void updateVariableIndex( unsigned oldIndex, unsigned newIndex );
 
-    const PiecewiseLinearConstraint *getSourcePLC();
+    void *getSourcePLC();
 
-    void setSourcePLC(const PiecewiseLinearConstraint *sourcePLC);
+    void setSourcePLC(const void *sourcePLC);
 
 private:
-    const void *_sourcePLC;
+    void *_sourcePLC;
 
     /*
       Bound tightening information.

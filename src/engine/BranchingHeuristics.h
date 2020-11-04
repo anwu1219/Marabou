@@ -27,11 +27,11 @@ public:
 
     void initialize( List<PiecewiseLinearConstraint *> &constraints );
 
-    void updateScore( const PiecewiseLinearConstraint *constraint, double score );
+    void updateScore( PiecewiseLinearConstraint *constraint, double score );
 
-    void updateSpatial( const PiecewiseLinearConstraint *child, const PiecewiseLinearConstraint *parent, double numFixed );
+    void updateSpatial( PiecewiseLinearConstraint *child, PiecewiseLinearConstraint *parent, double numFixed );
 
-    void updateTime( const PiecewiseLinearConstraint *constraint );
+    void updateTime( PiecewiseLinearConstraint *constraint );
 
     PiecewiseLinearConstraint *pickSplittingConstraint();
 
@@ -43,12 +43,12 @@ private:
     /*
       Mapping from a PLConstraint to its score
     */
-    Map<const PiecewiseLinearConstraint *, double> _constraintToScore;
+    Map<PiecewiseLinearConstraint *, double> _constraintToScore;
 
     /*
       Mapping from a PLConstraint to its temporary score
     */
-    Map<const PiecewiseLinearConstraint *, double> _constraintToTempScore;
+    Map<PiecewiseLinearConstraint *, double> _constraintToTempScore;
 
     /*
       TreeSet of <score, constraint> pair

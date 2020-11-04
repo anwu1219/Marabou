@@ -16,6 +16,7 @@
 #ifndef __SmtCore_h__
 #define __SmtCore_h__
 
+#include "BranchingHeuristics.h"
 #include "PiecewiseLinearCaseSplit.h"
 #include "PiecewiseLinearConstraint.h"
 #include "SmtState.h"
@@ -102,6 +103,11 @@ public:
     void setStatistics( Statistics *statistics );
 
     /*
+      Reference to the BranchingHeuristics in the engine.
+    */
+    void setInfleunceForSplitting( BranchingHeuristics *influenceForSplitting );
+
+    /*
       Have the SMT core choose, among a set of violated PL constraints, which
       constraint should be repaired (without splitting)
     */
@@ -142,6 +148,8 @@ private:
       Collect and print various statistics.
     */
     Statistics *_statistics;
+
+    BranchingHeuristics *_influenceForSplitting;
 
     /*
       The case-split stack.

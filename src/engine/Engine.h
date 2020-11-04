@@ -85,8 +85,6 @@ public:
     void restoreState( const EngineState &state );
     void setNumPlConstraintsDisabledByValidSplits( unsigned numConstraints );
 
-    BranchingHeuristics *getInfluenceForSplitting();
-
     /*
       A request from the user to terminate
     */

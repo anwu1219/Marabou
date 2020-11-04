@@ -16,7 +16,6 @@
 #ifndef __IEngine_h__
 #define __IEngine_h__
 
-#include "BranchingHeuristics.h"
 #include "DivideStrategy.h"
 #include "SnCDivideStrategy.h"
 #include "List.h"
@@ -100,9 +99,7 @@ public:
     /*
       Return the list of PLConstraints
     */
-    virtual const  List<PiecewiseLinearConstraint *> &getPiecewiseLinearConstraints() = 0;
-
-    virtual BranchingHeuristics *getInfluenceForSplitting() = 0;
+    virtual const List<PiecewiseLinearConstraint *> &getPiecewiseLinearConstraints() = 0;
 
 };
 

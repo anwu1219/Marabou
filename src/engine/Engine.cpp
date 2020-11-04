@@ -51,6 +51,8 @@ Engine::Engine()
     , _splittingStrategy( Options::get()->getDivideStrategy() )
 {
     _smtCore.setStatistics( &_statistics );
+    _smtCore.setInfleunceForSplitting( &_influenceForSplitting );
+
     _tableau->setStatistics( &_statistics );
     _rowBoundTightener->setStatistics( &_statistics );
     _constraintBoundTightener->setStatistics( &_statistics );
@@ -1407,11 +1409,6 @@ bool Engine::attemptToMergeVariables( unsigned x1, unsigned x2 )
     _activeEntryStrategy->initialize( _tableau );
 
     return true;
-}
-
-BranchingHeuristics *Engine::getInfluenceForSplitting()
-{
-    return &_influenceForSplitting;
 }
 
 void Engine::applySplit( const PiecewiseLinearCaseSplit &split )
