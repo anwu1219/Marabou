@@ -45,12 +45,12 @@ private:
     /*
       Mapping from a PLConstraint to its score
     */
-    Map<PiecewiseLinearConstraint *, double> _constraintToScore;
+    Map<const PiecewiseLinearConstraint *, double> _constraintToScore;
 
     /*
       Mapping from a PLConstraint to its temporary score
     */
-    Map<PiecewiseLinearConstraint *, double> _constraintToTempScore;
+    Map<const PiecewiseLinearConstraint *, double> _constraintToTempScore;
 
     /*
       TreeSet of <score, constraint> pair
