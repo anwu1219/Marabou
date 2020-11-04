@@ -484,6 +484,7 @@ PiecewiseLinearCaseSplit ReluConstraint::getInactiveSplit() const
     PiecewiseLinearCaseSplit inactivePhase;
     inactivePhase.storeBoundTightening( Tightening( _b, 0.0, Tightening::UB ) );
     inactivePhase.storeBoundTightening( Tightening( _f, 0.0, Tightening::UB ) );
+    inactivePhase.setSourcePLC( this );
     return inactivePhase;
 }
 
@@ -492,6 +493,7 @@ PiecewiseLinearCaseSplit ReluConstraint::getActiveSplit() const
     // Active phase: b >= 0, b - f = 0
     PiecewiseLinearCaseSplit activePhase;
     activePhase.storeBoundTightening( Tightening( _b, 0.0, Tightening::LB ) );
+    activePhase.setSourcePLC( this );
 
     if ( _auxVarInUse )
     {

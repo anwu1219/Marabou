@@ -79,6 +79,16 @@ void PiecewiseLinearCaseSplit::updateVariableIndex( unsigned oldIndex, unsigned 
         equation.updateVariableIndex( oldIndex, newIndex );
 }
 
+const PiecewiseLinearConstraint *PiecewiseLinearCaseSplit::getSourcePLC()
+{
+	return _sourcePLC;
+}
+
+void PiecewiseLinearCaseSplit::setSourcePLC(const PiecewiseLinearConstraint *sourcePLC)
+{
+	_sourcePLC = sourcePLC;
+}
+
 //
 // Local Variables:
 // compile-command: "make -C ../.. "

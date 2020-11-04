@@ -22,6 +22,8 @@
 #include "Pair.h"
 #include "Tightening.h"
 
+class PiecewiseLinearConstraint;
+
 class PiecewiseLinearCaseSplit
 {
 public:
@@ -53,7 +55,13 @@ public:
     */
     void updateVariableIndex( unsigned oldIndex, unsigned newIndex );
 
+    const PiecewiseLinearConstraint *getSourcePLC();
+
+    void setSourcePLC(const PiecewiseLinearConstraint *sourcePLC);
+
 private:
+    const PiecewiseLinearConstraint *_sourcePLC;
+
     /*
       Bound tightening information.
     */
