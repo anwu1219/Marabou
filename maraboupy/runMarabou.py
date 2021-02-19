@@ -87,7 +87,7 @@ def encode_mnist_linf(network, index, epsilon, target_label):
     print("correct label: {}".format(Y_test[index]))
     for x in np.array(network.inputVars).flatten():
         network.setLowerBound(x, max(0, point[x] - epsilon))
-        network.setUpperBound(x, min(1, point[x] - epsilon))
+        network.setUpperBound(x, min(1, point[x] + epsilon))
     outputVars = network.outputVars.flatten()
     for i in range(10):
         if i != target_label:
