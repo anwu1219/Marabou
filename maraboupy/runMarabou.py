@@ -25,7 +25,6 @@ def main():
         args = arguments().parse_args()
         print(args)
         query = createQuery(args)
-        MarabouCore.saveQuery(query, "testQuery")
         if query == None:
             print("Unable to create an input query!")
             print("There are three options to define the benchmark:\n"
