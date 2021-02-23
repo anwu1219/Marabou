@@ -33,7 +33,6 @@ def main():
                   "3. Provide a network, a dataset (--dataset), an epsilon (-e), "
                   "target label (-t), and the index of the point in the test set (-i).")
             exit(1)
-
         options = createOptions(args)
         vals, stats = MarabouCore.solve(query, options)
         if stats.hasTimedOut():
@@ -42,10 +41,10 @@ def main():
             print("unsat")
         else:
             if args.verbosity > 0:
-                for i in range(ipq.getNumInputVariables()):
-                    print("input {} = {}".format(i, vals[ipq.inputVariableByIndex(i)]))
-                for i in range(ipq.getNumOutputVariables()):
-                    print("output {} = {}".format(i, vals[ipq.outputVariableByIndex(i)]))
+                for i in range(query.getNumInputVariables()):
+                    print("input {} = {}".format(i, vals[query.inputVariableByIndex(i)]))
+                for i in range(query.getNumOutputVariables()):
+                    print("output {} = {}".format(i, vals[query.outputVariableByIndex(i)]))
             print("sat")
 
 def createQuery(args):
@@ -97,13 +96,26 @@ def encode_mnist_linf(network, index, epsilon, target_label):
     return
 
 def encode_cifar10_linf(network, index, epsilon, target_label):
-    from tensorflow.keras.datasets import cifar10
-    (X_train, Y_train), (X_test, Y_test) = cifar10.load_data()
-    point = np.array(X_test[index]).flatten() / 255
-    print("correct label: {}".format(Y_test[index]))
-    for x in np.array(network.inputVars).flatten():
-        network.setLowerBound(x, max(0, point[x] - epsilon))
-        network.setUpperBound(x, min(1, point[x] + epsilon))
+    import torchvision.datasets as datasets
+    import torchvision.transforms as transforms
+    cifar_test = datasets.CIFAR10('/barrett/scratch/haozewu/leaderBoard/data/cifardata/', train=False, download=True, transform=transforms.ToTensor())
+    X,y = cifar_test[index]
+    point = X.unsqueeze(0).numpy().flatten()
+    lb = np.zeros(3072)
+    ub = np.zeros(3072)
+    for i in range(1024):
+        lb[i] = (max(0, point[i] - epsilon) - 0.485) / 0.225
+        ub[i] = (min(1, point[i] + epsilon) - 0.485) / 0.225
+    for i in range(1024):
+        lb[1024 + i] = (max(0, point[1024 + i] - epsilon) - 0.456) / 0.225
+        ub[1024 + i] = (min(1, point[1024 + i] + epsilon) - 0.456) / 0.225
+    for i in range(1024):
+        lb[2048 + i] = (max(0, point[2048 + i] - epsilon) - 0.406) / 0.225
+        ub[2048 + i] = (min(1, point[2048 + i] + epsilon) - 0.406) / 0.225
+    print("correct label: {}, target label: {}".format(y, target_label))
+    for i in range(3072):
+        network.setLowerBound(i, lb[i])
+        network.setUpperBound(i, ub[i])
     for i in range(10):
         if i != target_label:
             network.addInequality([network.outputVars[0][i],
