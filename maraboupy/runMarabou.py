@@ -25,7 +25,9 @@ def main():
         args = arguments().parse_args()
         print(args)
         query, network = createQuery(args)
-        MarabouCore.saveQuery(query, "testQuery")
+        if (args.query_dump_file != ""):
+                MarabouCore.saveQuery(query, args.query_dump_file)
+                exit()
         if query == None:
             print("Unable to create an input query!")
             print("There are three options to define the benchmark:\n"
@@ -43,9 +45,14 @@ def main():
         else:
             for i in range(query.getNumInputVariables()):
                 print("x{} = {}".format(i, vals[query.inputVariableByIndex(i)]))
-            outputs = network.evaluateWithoutMarabou(np.array([vals[query.inputVariableByIndex(i)] for i in range(query.getNumInputVariables())]))
-            for i, output in enumerate(list(outputs)):
-                print("y{} = {}".format(i, output))
+            if network:
+                outputs = network.evaluateWithoutMarabou(np.array([[vals[query.inputVariableByIndex(i)] for i in range(query.getNumInputVariables())]]))
+                for i, output in enumerate(list(outputs.flatten())):
+                    print("y{} = {}".format(i, output))
+            else:
+                for i in range(query.getNumOutputVariables()):
+                    print("y{} = {}".format(i, vals[query.outputVariableByIndex(i)]))
+
             print("sat")
 
 def createQuery(args):
@@ -164,6 +171,9 @@ def arguments():
                         help='The target of the adversarial attack')
     parser.add_argument('-i,', '--index', type=int, default=0,
                         help='The index of the point in the test set')
+
+    parser.add_argument('--query-dump-file', type=str, default="",
+                        help='Dump the query to a file')
 
     options = MarabouCore.Options()
     # runtime options
