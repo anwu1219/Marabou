@@ -24,7 +24,10 @@ from maraboupy import MarabouUtils
 def main():
         args = arguments().parse_args()
         print(args)
-        query = createQuery(args)
+        query, network = createQuery(args)
+        if (args.query_dump_file != ""):
+                MarabouCore.saveQuery(query, args.query_dump_file)
+                exit()
         if query == None:
             print("Unable to create an input query!")
             print("There are three options to define the benchmark:\n"
@@ -40,17 +43,22 @@ def main():
         elif len(vals)==0:
             print("unsat")
         else:
-            if args.verbosity > 0:
-                for i in range(query.getNumInputVariables()):
-                    print("input {} = {}".format(i, vals[query.inputVariableByIndex(i)]))
+            for i in range(query.getNumInputVariables()):
+                print("x{} = {}".format(i, vals[query.inputVariableByIndex(i)]))
+            if network:
+                outputs = network.evaluateWithoutMarabou(np.array([[vals[query.inputVariableByIndex(i)] for i in range(query.getNumInputVariables())]]))
+                for i, output in enumerate(list(outputs.flatten())):
+                    print("y{} = {}".format(i, output))
+            else:
                 for i in range(query.getNumOutputVariables()):
-                    print("output {} = {}".format(i, vals[query.outputVariableByIndex(i)]))
+                    print("y{} = {}".format(i, vals[query.outputVariableByIndex(i)]))
+
             print("sat")
 
 def createQuery(args):
     if args.input_query:
         query = Marabou.load_query(args.input_query)
-        return query
+        return query, None
     networkPath = args.network
 
     suffix = networkPath.split('.')[-1]
@@ -62,22 +70,22 @@ def createQuery(args):
         network = Marabou.read_onnx(networkPath)
     else:
         print("The network must be in .pb, .nnet, or .onnx format!")
-        return None
+        return None, None
 
     if  args.prop != None:
         query = network.getMarabouQuery()
         if MarabouCore.loadProperty(query, args.prop):
-            return query
+            return query, network
 
     if args.dataset == 'mnist':
         encode_mnist_linf(network, args.index, args.epsilon, args.target_label)
-        return network.getMarabouQuery()
+        return network.getMarabouQuery(), network
     elif args.dataset == 'cifar10':
         encode_cifar10_linf(network, args.index, args.epsilon, args.target_label)
-        return network.getMarabouQuery()
+        return network.getMarabouQuery(), network
     else:
         print("No property encoded! The dataset must be taxi or mnist or cifar10.")
-        return network.getMarabouQuery()
+        return network.getMarabouQuery(), network
 
 def encode_mnist_linf(network, index, epsilon, target_label):
     from tensorflow.keras.datasets import mnist
@@ -98,7 +106,7 @@ def encode_mnist_linf(network, index, epsilon, target_label):
 def encode_cifar10_linf(network, index, epsilon, target_label):
     import torchvision.datasets as datasets
     import torchvision.transforms as transforms
-    cifar_test = datasets.CIFAR10('/barrett/scratch/haozewu/leaderBoard/data/cifardata/', train=False, download=True, transform=transforms.ToTensor())
+    cifar_test = datasets.CIFAR10('./data/cifardata/', train=False, download=True, transform=transforms.ToTensor())
     X,y = cifar_test[index]
     point = X.unsqueeze(0).numpy().flatten()
     lb = np.zeros(3072)
@@ -163,6 +171,9 @@ def arguments():
                         help='The target of the adversarial attack')
     parser.add_argument('-i,', '--index', type=int, default=0,
                         help='The index of the point in the test set')
+
+    parser.add_argument('--query-dump-file', type=str, default="",
+                        help='Dump the query to a file')
 
     options = MarabouCore.Options()
     # runtime options
